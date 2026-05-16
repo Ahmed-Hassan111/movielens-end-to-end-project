@@ -108,7 +108,7 @@ Run all steps in a Snowflake Worksheet as `ACCOUNTADMIN`.
 
 ```bash
 # Clone the repo
-git clone https://github.com/AbdallahAhmed7/movielens-end-to-end-data-pipeline.git
+git clone https://github.com/Ahmed-Hassan111/movielens-end-to-end-project.git
 cd movielens-end-to-end-data-pipeline
 
 # Install packages
