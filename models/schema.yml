@@ -1,0 +1,89 @@
+version: 2
+models:
+  #  DIMENSIONS
+  - name: dim_movies
+    description: "One row per movie with cleaned title and extracted year"
+    columns:
+      - name: movie_sk
+        tests: [unique, not_null]
+      - name: movie_id
+        tests: [unique, not_null]
+      - name: movie_title
+        tests: [not_null]
+  - name: dim_users
+    description: "One row per user with behavioral stats derived from ratings"
+    columns:
+      - name: user_sk
+        tests: [unique, not_null]
+      - name: user_id
+        tests: [unique, not_null]
+  - name: dim_genome_tags
+    description: "Tag vocabulary used in genome relevance scores"
+    columns:
+      - name: tag_sk
+        tests: [unique, not_null]
+      - name: tag_id
+        tests: [unique, not_null]
+      - name: tag_name
+        tests: [not_null]
+
+  #  FACT
+  - name: fct_ratings
+    description: "One row per rating event — central fact table"
+    columns:
+      - name: rating_sk
+        tests: [unique, not_null]
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: movie_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_movies')
+                field: movie_id
+      - name: rating
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
+  #  BRIDGE
+  - name: bridge_movie_tags
+    description: "Relevance scores linking movies to genome tags"
+    columns:
+      - name: movie_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_movies')
+                field: movie_id
+      - name: tag_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_genome_tags')
+                field: tag_id
+      - name: relevance_score
+        tests: [not_null]
+  #  MARTS
+  - name: mart_genre_summary
+    columns:
+      - name: genre
+        tests: [unique, not_null]
+
+  - name: mart_movie_releases
+    columns:
+      - name: release_year
+        tests: [unique, not_null]
+
+  - name: mart_top_movies
+    columns:
+      - name: movie_id
+        tests: [unique, not_null]
