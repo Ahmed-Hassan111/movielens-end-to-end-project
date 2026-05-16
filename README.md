@@ -166,7 +166,9 @@ dbt deps && dbt snapshot && dbt run && dbt test
 
 **collaborate with**
 
+**Abdallah Ahmed**
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/AbdallahAhmed7)
+**Mohamed Ashraf**
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/mohamedashraf1012)
 
 
