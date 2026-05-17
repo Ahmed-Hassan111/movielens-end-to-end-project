@@ -164,7 +164,7 @@ dbt deps && dbt snapshot && dbt run && dbt test
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)]([https://linkedin.com/in/abdallahahmed7](https://www.linkedin.com/in/ahmed-hassan-dataeng/))
 
-**Collaborate with**
+**ITI Project Collaborate with**
 
 **Abdallah Ahmed**
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/AbdallahAhmed7)
