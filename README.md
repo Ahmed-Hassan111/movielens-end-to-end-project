@@ -93,6 +93,41 @@ Run all steps in a Snowflake Worksheet as `ACCOUNTADMIN`.
 
 ---
 
+## 🌪️ Apache Airflow Orchestration
+
+The entire pipeline is automated using Apache Airflow through a DAG named:
+
+```python
+movielens_pipeline
+```
+
+The DAG runs daily and orchestrates the complete ELT workflow end-to-end.
+
+### Airflow Tasks
+
+| Order | Task | Description |
+|------|------|-------------|
+| 1 | `check_s3_files` | Waits for all required CSV files to exist in AWS S3 |
+| 2 | `load_to_snowflake` | Loads raw CSV files from S3 into Snowflake RAW tables |
+| 3 | `dbt_run_staging` | Builds staging models in Snowflake |
+| 4 | `dbt_run_core` | Builds dimension, fact, and bridge models |
+| 5 | `dbt_run_marts` | Builds Gold mart models |
+| 6 | `dbt_test` | Runs dbt data quality and relationship tests |
+
+### DAG Workflow
+
+<img width="1212" height="160" alt="airflow_dag1" src="https://github.com/user-attachments/assets/98868595-3b64-4c93-9bf0-cd58cd4219ad" />
+
+
+### Scheduling
+
+- Schedule: `@daily`
+- Catchup: `False`
+
+This orchestration layer automates ingestion, transformation, testing, and warehouse loading without manual intervention.
+
+
+---
 
 ## 📊 Power BI Dashboard
 
@@ -104,54 +139,97 @@ Run all steps in a Snowflake Worksheet as `ACCOUNTADMIN`.
   
 ## 🚀 How to Run
 
-**Prerequisites:** Snowflake account with `MOVIELENS.RAW` loaded · dbt Core installed (`pip install dbt-snowflake`) · credentials in `~/.dbt/profiles.yml`
+### Prerequisites
+
+- Docker & Docker Compose
+- Snowflake account
+- AWS account + S3 bucket
+- Airflow connections configured:
+  - `aws_conn`
+  - `snowflake_conn`
+
+---
+
+### Start the Pipeline
 
 ```bash
-# Clone the repo
-git clone https://github.com/Ahmed-Hassan111/movielens-end-to-end-project.git
+# Clone repository
+git clone https://github.com/AbdallahAhmed7/movielens-end-to-end-data-pipeline.git
+
+# Enter project directory
 cd movielens-end-to-end-data-pipeline
 
+# Enter Airflow directory
+cd airflow
+
+
+# Build custom Airflow image
+docker compose build
+
+# Start Airflow services
+docker compose up -d
+```
+
+Open the Airflow UI at:
+```bash
+http://localhost:8080
+```
+Then trigger the DAG:
+```bash
+movielens_pipeline
+```
+
+
+### Running dbt Manually (Optional)
+
+For local development and debugging, you can run dbt independently:
+
+```bash
 # Install packages
 dbt deps
 
-# Verify connection
+# Verify Snowflake connection
 dbt debug
 
-# Build all models
+# Run models
 dbt run
 
-# Run all tests
+# Run tests
 dbt test
 
-# View documentation and lineage
+# Generate and serve docs
 dbt docs generate && dbt docs serve
 ```
 
-**Full pipeline in one command:**
-```bash
-dbt deps && dbt snapshot && dbt run && dbt test
-```
 
 
 
 ## 📁 Project Structure
 
 ```bash
+
 .
+├── airflow/
+│   ├── dags/
+│   │   └── movielens_pipeline.py
+│   ├── docker-compose.yml
+│   ├── .env
+│   └── Dockerfile
+│
 ├── models/
-│   ├── staging/        # Raw data 
-│   ├── dim/            # Dimension tables 
-│   ├── fct/            # Fact tables 
-│   ├── bridge/         # Bridge tables (handling many-to-many relationships)
-│   ├── mart/           # Final business-ready data models (Gold layer)
-│   ├── sources.yml     # Source definitions (raw data locations)
-│   └── schema.yml      # Tests, documentation, and model metadata
+│   ├── staging/
+│   ├── dim/
+│   ├── fct/
+│   ├── bridge/
+│   ├── mart/
+│   ├── sources.yml
+│   └── schema.yml
 │
-├── powerbi/            # Power BI dashboards and reports
+├── docs/
 │
-├── dbt_project.yml     # dbt project configuration
-├── packages.yml        # dbt package dependencies
-├── README.md           # Project documentation
+├── dbt_project.yml
+├── packages.yml
+└── README.md
 ```
 
 
