@@ -21,6 +21,5 @@ FROM src_ratings
 WHERE rating IS NOT NULL
 
 {% if is_incremental() %}
-  -- الجزء المسؤول عن التحميل التراكمي: يجلب البيانات الجديدة فقط
   AND rating_timestamp > (SELECT MAX(rating_timestamp) FROM {{ this }})
 {% endif %}

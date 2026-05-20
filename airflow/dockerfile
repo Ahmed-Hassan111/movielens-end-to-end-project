@@ -1,0 +1,15 @@
+FROM apache/airflow:2.9.0
+
+USER airflow
+
+# Step 1: Airflow providers with official constraints
+RUN pip install --no-cache-dir \
+    --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.9.0/constraints-3.12.txt" \
+    apache-airflow-providers-snowflake==5.3.1 \
+    apache-airflow-providers-amazon==8.19.0
+
+# Step 2: dbt installed separately (needs newer sqlparse, incompatible with Airflow constraints)
+RUN pip install --no-cache-dir \
+    "sqlparse>=0.5.0,<0.6.0" \
+    "dbt-core==1.8.0" \
+    "dbt-snowflake==1.8.0"
